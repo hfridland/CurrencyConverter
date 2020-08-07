@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Currency Converter</string>
+    <string name="title_activity_sel_currency">SelCurrencyActivity</string>
+    <string name="author">Author</string>
+    <string name="name">Haim Fridland</string>
+    <string name="email">hfridland@shaw.ca</string>
+    <string name="about">About</string>
+</resources>
