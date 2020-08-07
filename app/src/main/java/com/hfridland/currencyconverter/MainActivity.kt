@@ -18,8 +18,6 @@ import android.view.MenuItem
 
 
 class MainActivity : AppCompatActivity() {
-    private var curCodeFrom = "USD"
-    private var curCodeTo = "CAD"
     private var currencyData: CurrencyDataProcessor.CurrencyData? = null
 
     private val REQUEST_CODE_FROM = 0
@@ -29,9 +27,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Params.load(this)
         savedInstanceState?.let {
-            curCodeFrom = it.getString("curCodeFrom")
-            curCodeTo = it.getString("curCodeTo")
             val isCurrencyDataExists = it.getBoolean("isCurrencyDataExists")
             if (isCurrencyDataExists)
                 currencyData = it.getSerializable("CurrencyData") as CurrencyDataProcessor.CurrencyData
@@ -43,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         btnCalc.setOnClickListener{
             try {
-                val k: Double? = CurrencyDataProcessor.getKoeff(currencyData, curCodeFrom, curCodeTo)
+                val k: Double? = CurrencyDataProcessor.getKoeff(currencyData, Params.data.curCodeFrom, Params.data.curCodeTo)
                 k?.let {
                     val res: Double = etFromVal.text.toString().toDouble() * k
                     tvCurVal.text = "%.2f".format(res)
@@ -55,13 +52,13 @@ class MainActivity : AppCompatActivity() {
 
         btnChangeCurFrom.setOnClickListener{
             val intent = Intent(this, SelCurrencyActivity::class.java)
-            intent.putExtra("code", curCodeFrom)
+            intent.putExtra("code", Params.data.curCodeFrom)
             startActivityForResult(intent, REQUEST_CODE_FROM)
         }
 
         btnChangeCurTo.setOnClickListener{
             val intent = Intent(this, SelCurrencyActivity::class.java)
-            intent.putExtra("code", curCodeTo)
+            intent.putExtra("code", Params.data.curCodeTo)
             startActivityForResult(intent, REQUEST_CODE_TO)
         }
 
@@ -74,8 +71,6 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(savedInstanceState)
 
         savedInstanceState.let {
-            it.putString("curCodeFrom", curCodeFrom)
-            it.putString("curCodeTo", curCodeTo)
             it.putBoolean("isCurrencyDataExists", currencyData != null)
             if (currencyData != null)
                 it.putSerializable("CurrencyData", currencyData)
@@ -83,14 +78,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCurString(curCode: String): String {
-        val code = CurrencyCodes.data[curCode]?.code;
-        val descr = CurrencyCodes.data[curCode]?.descr;
+        val code = CurrencyCodes.data[curCode]?.code
+        val descr = CurrencyCodes.data[curCode]?.descr
         return "$code - $descr"
     }
 
     private fun displayData() {
-        tvCurFrom.text = getCurString(curCodeFrom)
-        tvCurTo.text = getCurString(curCodeTo)
+        tvCurFrom.text = getCurString(Params.data.curCodeFrom)
+        tvCurTo.text = getCurString(Params.data.curCodeTo)
     }
 
     private fun requestCurrencyData() {
@@ -128,17 +123,18 @@ class MainActivity : AppCompatActivity() {
         when(requestCode) {
             REQUEST_CODE_FROM -> {
                 data?.let {
-                    curCodeFrom = it.getStringExtra("code")
-                    tvCurFrom.text = getCurString(curCodeFrom)
+                    Params.data.curCodeFrom = it.getStringExtra("code")
+                    tvCurFrom.text = getCurString(Params.data.curCodeFrom)
                 }
             }
             REQUEST_CODE_TO -> {
                 data?.let {
-                    curCodeTo = it.getStringExtra("code")
-                    tvCurTo.text = getCurString(curCodeTo)
+                    Params.data.curCodeTo = it.getStringExtra("code")
+                    tvCurTo.text = getCurString(Params.data.curCodeTo)
                 }
             }
         }
+        Params.save(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -149,8 +145,6 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.miAbout -> {
-                //val intent = Intent(this, AboutActivity::class.java)
-                //startActivity(intent)
                 startActivity(Intent(this, AboutActivity::class.java))
             }
         }
