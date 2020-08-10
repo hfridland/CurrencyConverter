@@ -39,15 +39,18 @@ class MainActivity : AppCompatActivity() {
 
 
         btnCalc.setOnClickListener{
-            try {
-                val k: Double? = CurrencyDataProcessor.getKoeff(currencyData, Params.data.curCodeFrom, Params.data.curCodeTo)
-                k?.let {
-                    val res: Double = etFromVal.text.toString().toDouble() * k
-                    tvCurVal.text = "%.2f".format(res)
+            currencyData?.let{
+                try {
+                    val k: Double? = CurrencyDataProcessor.getKoeff(currencyData, Params.data.curCodeFrom, Params.data.curCodeTo)
+                    k?.let {
+                        val res: Double = etFromVal.text.toString().toDouble() * k
+                        tvCurVal.text = getString(R.string.currencyFormat).format(res)
+                    }
+                } catch(ex: NoSuchElementException) {
+                    Toast.makeText(applicationContext,"Currency does not found in database", Toast.LENGTH_LONG).show()
                 }
-            } catch(ex: NoSuchElementException) {
-                Toast.makeText(applicationContext,"Currency does not found in database", Toast.LENGTH_LONG).show()
-            }
+            } ?:
+                Toast.makeText(this, "No courses data from server", Toast.LENGTH_LONG).show()
         }
 
         btnChangeCurFrom.setOnClickListener{
@@ -61,8 +64,6 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("code", Params.data.curCodeTo)
             startActivityForResult(intent, REQUEST_CODE_TO)
         }
-
-        //miA
 
         displayData()
     }
@@ -103,8 +104,7 @@ class MainActivity : AppCompatActivity() {
 
         if (currencyData == null) {
             launch(UI) {
-                val data = fetchCurrencyJsonData().await()
-                currencyData = data
+                currencyData = fetchCurrencyJsonData().await()
 
                 openFileOutput("data.dat", Context.MODE_PRIVATE).use {
                     ObjectOutputStream(it).use {

@@ -5,4 +5,11 @@
     <string name="name">Haim Fridland</string>
     <string name="email">hfridland@shaw.ca</string>
     <string name="about">About</string>
+    <string name="usd">USD - US Dollar</string>
+    <string name="cad">CAD - Canadian</string>
+    <string name="dot3">&#8230;</string>
+    <string name="amt4convert">Amount for convert</string>
+    <string name="one">1.00</string>
+    <string name="eqv">=</string>
+    <string name="currencyFormat">%.2f</string>
 </resources>
